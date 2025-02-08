@@ -2,7 +2,7 @@
   "name": "pytest-runner",
   "displayName": "pytest-runner",
   "description": "在VSCode里通过按钮运行和调试pytest测试",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "publisher": "花小田",
   "engines": {
     "vscode": "^1.80.0"
@@ -18,29 +18,41 @@
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      
+      {
+        "command": "extension.viewAllureReport",
+        "title": "🚀右键生成allure报告"
+      }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "extension.viewAllureReport",
+          "when": "explorerResourceIsFolder",
+          "group": "navigation"
+        }
+      ]
+    },
     "configuration": {
       "type": "object",
       "title": "Pytest Runner Settings",
       "properties": {
-          "pytestRunner.allureDir": {
-              "type": "string",
-              "default": "report_v3",
-              "description": "Set the Allure report directory"
-          },
-          "pytestRunner.pytestArgs": {
-              "type": "string",
-              "default": "-v",
-              "description": "Pytest 运行参数，例如 `-v`，`--setup-show`，`-k 'test_name'`"
-          },
-          "pytestRunner.pythonCmd": {
-            "type": "string",
-            "default": "-v",
-            "description": "读取运行时对于python的设定，例如python3.8，python3.7，python，sudo python3"
+        "pytestRunner.allureDir": {
+          "type": "string",
+          "default": "report_v3",
+          "description": "Set the Allure report directory"
+        },
+        "pytestRunner.pytestArgs": {
+          "type": "string",
+          "default": "-v",
+          "description": "Pytest 运行参数，例如 `-v`，`--setup-show`，`-k 'test_name'`"
+        },
+        "pytestRunner.pythonCmd": {
+          "type": "string",
+          "default": "-v",
+          "description": "读取运行时对于python的设定，例如python3.8，python3.7，python，sudo python3"
         }
       }
-  }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
