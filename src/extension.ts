@@ -6,19 +6,19 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider('python', codelensProvider)
     );
-    vscode.window.showInformationMessage("恭喜，PytestRunner注册成功啦");
+    vscode.window.showInformationMessage("恭喜，PytestRunner可以使用啦");
 
     // 注册运行测试命令
     context.subscriptions.push(
         vscode.commands.registerCommand('pytest-runner.runTest', (args: { testName: string; filePath: string; testClass?: string }) => {
-            runPytestTest(args.testName, args.filePath, args.testClass);
+            runPytestTestFunc(args.testName, args.filePath, args.testClass);
         })
     );
 
     // 注册调试测试命令
     context.subscriptions.push(
         vscode.commands.registerCommand('pytest-runner.debugTest', (args: { testName: string; filePath: string; testClass?: string }) => {
-            debugPytestTest(args.testName, args.filePath, args.testClass);
+            debugPytestTestFunc(args.testName, args.filePath, args.testClass);
         })
     );
 
@@ -110,12 +110,14 @@ class TestCodeLensProvider implements vscode.CodeLensProvider {
 /**
  * 运行 pytest 测试命令（非调试）
  */
-function runPytestTest(testName: string, filePath: string, testClass?: string) {
+function runPytestTestFunc(testName: string, filePath: string, testClass?: string) {
     const config = vscode.workspace.getConfiguration("pytestRunner");
-    const alluredir = config.get<string>("alluredir", "report_v3"); // 读取用户设置，默认 "report_v3"
-	const pytestArgs = config.get<string>('args', '-v'); // 读取 pytest 参数，默认 '-v'
-	const cwd = '${PWD}'; // 确保路径正确
-    let command = `sudo PYTHONPATH=${cwd} python3.7 -m pytest ${pytestArgs}`;
+    const alluredir = config.get<string>("allureDir", "report_v3"); // 读取用户设置，默认 "report_v3"
+	const pytestArgs = config.get<string>('pytestArgs', '-v'); // 读取 pytest 参数，默认 '-v'
+	const pythonCmd = config.get<string>('pythonCmd', 'python'); // 读取运行时对于python的设定
+	// const cwd = '${PWD}'; // 确保路径正确
+    // let command = `sudo PYTHONPATH=${cwd} python3.7 -m pytest ${pytestArgs}`;
+    let command = `${pythonCmd} -m pytest ${pytestArgs}`;
     if (alluredir.trim()) {
         command += ` --alluredir=${alluredir}`;
     }
@@ -132,18 +134,18 @@ function runPytestTest(testName: string, filePath: string, testClass?: string) {
 /**
  * 启动调试测试用例
  */
-function debugPytestTest(testName: string, filePath: string, testClass?: string) {
+function debugPytestTestFunc(testName: string, filePath: string, testClass?: string) {
     const config = vscode.workspace.getConfiguration("pytestRunner");
-    const alluredir = config.get<string>("alluredir", "report_v3");
+    const allureDir = config.get<string>("allureDir", "report_v3");
 	const pytestArgs = config.get<string>('pytestArgs', '-v'); // 读取 pytest 额外参数
     let testTarget = testClass ? `${filePath}::${testClass}::${testName}` : `${filePath}::${testName}`;
-
-	// 如果 alluredir 设置也需要添加，可以在此扩展	
-    let args = ["-v"];
-    if (alluredir.trim()) {
-        args.push(`--alluredir=${alluredir}`);
+    console.log("参数是"+pytestArgs);
+    // 按空格拆分成数组（如果参数中有带空格的部分，需要更精细的解析，这里假设简单拆分足够）
+    const pytestArgsArray = pytestArgs.split(/\s+/);
+    let args = [...pytestArgsArray];
+    if (allureDir.trim()) {
+        args.push(`--alluredir=${allureDir}`);
     }
-	args.push(pytestArgs);
     args.push(testTarget);
 
     const debugConfig: vscode.DebugConfiguration = {
@@ -158,16 +160,17 @@ function debugPytestTest(testName: string, filePath: string, testClass?: string)
 
     vscode.debug.startDebugging(undefined, debugConfig);
 }
-
 /**
  * 运行整个测试类
  */
 function runPytestTestClass(className: string, filePath: string) {
     const config = vscode.workspace.getConfiguration("pytestRunner");
-    const alluredir = config.get<string>("alluredir", "report_v3");
+    const alluredir = config.get<string>("allureDir", "report_v3");
     const pytestArgs = config.get<string>('pytestArgs', '-v');
-    const cwd = '${PWD}';
-    let command = `sudo PYTHONPATH=${cwd} python3.7 -m pytest ${pytestArgs}`;
+    // const cwd = '${PWD}';
+    // let command = `sudo PYTHONPATH=${cwd} python3.7 -m pytest ${pytestArgs}`;
+    const pythonCmd = config.get<string>('pythonCmd', 'python'); // 读取运行时对于python的设定
+    let command = `${pythonCmd} -m pytest ${pytestArgs}`;
     if (alluredir.trim()) {
         command += ` --alluredir=${alluredir}`;
     }
@@ -185,7 +188,8 @@ function debugPytestTestClass(className: string, filePath: string) {
     const alluredir = config.get<string>("alluredir", "report_v3");
     const pytestArgs = config.get<string>('pytestArgs', '-v');
     let testTarget = `${filePath}::${className}`;
-    let args = [pytestArgs];
+    const pytestArgsArray = pytestArgs.split(/\s+/);
+    let args = [...pytestArgsArray];
     if (alluredir.trim()) {
         args.push(`--alluredir=${alluredir}`);
     }
