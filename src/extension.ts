@@ -6,7 +6,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider('python', codelensProvider)
     );
-    vscode.window.showInformationMessage("恭喜，PytestRunner可以使用啦");
+    vscode.window.showInformationMessage("恭喜，PytestRunner注册成功啦");
 
     // 注册运行测试命令
     context.subscriptions.push(
@@ -35,6 +35,19 @@ export function activate(context: vscode.ExtensionContext) {
             debugPytestTestClass(args.className, args.filePath);
         })
     );
+
+    // 在 VSCode 文件管理器中右键某个文件夹，就能看到 查看 Allure 报告 按钮
+    let disposable = vscode.commands.registerCommand('extension.viewAllureReport', (uri: vscode.Uri) => {
+        if (!uri) {
+            vscode.window.showErrorMessage("请选择一个文件夹");
+            return;
+        }
+        const reportPath = uri.fsPath; // 绝对路径
+        const terminal = vscode.window.createTerminal("Allure Report");
+        terminal.show();
+        terminal.sendText(`allure serve "${reportPath}"`);
+    });
+    context.subscriptions.push(disposable);
 }
 
 class TestCodeLensProvider implements vscode.CodeLensProvider {
@@ -113,10 +126,8 @@ class TestCodeLensProvider implements vscode.CodeLensProvider {
 function runPytestTestFunc(testName: string, filePath: string, testClass?: string) {
     const config = vscode.workspace.getConfiguration("pytestRunner");
     const alluredir = config.get<string>("allureDir", "report_v3"); // 读取用户设置，默认 "report_v3"
-	const pytestArgs = config.get<string>('pytestArgs', '-v'); // 读取 pytest 参数，默认 '-v'
-	const pythonCmd = config.get<string>('pythonCmd', 'python'); // 读取运行时对于python的设定
-	// const cwd = '${PWD}'; // 确保路径正确
-    // let command = `sudo PYTHONPATH=${cwd} python3.7 -m pytest ${pytestArgs}`;
+    const pytestArgs = config.get<string>('pytestArgs', '-v'); // 读取 pytest 参数，默认 '-v'
+    const pythonCmd = config.get<string>('pythonCmd', 'python'); // 读取运行时对于python的设定
     let command = `${pythonCmd} -m pytest ${pytestArgs}`;
     if (alluredir.trim()) {
         command += ` --alluredir=${alluredir}`;
