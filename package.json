@@ -1,15 +1,19 @@
 {
-  "name": "pytest-runner",
-  "displayName": "pytest-runner",
+  "name": "fast-pytest-runner",
+  "displayName": "fast-pytest-runner",
   "description": "在VSCode里通过按钮运行和调试pytest测试",
   "version": "1.0.3",
-  "publisher": "花小田",
+  "publisher": "jiyegui",
   "engines": {
     "vscode": "^1.80.0"
   },
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlowerOda/PytestRunner.git"
+  },
   "activationEvents": [
     "onLanguage:python",
     "onCommand:pytest-runner.runTest",

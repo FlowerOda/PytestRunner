@@ -1,8 +1,8 @@
-# Pytest Runner for VS Code
+# Fast Pytest Runner for VS Code
 
 ## 🚀 简介
 
-**Pytest Runner** 是一款专为 VS Code 设计的插件，旨在优化 `Python Test Explorer for Visual Studio Code` 的一些不足之处。该插件支持更快的测试扫描、更灵活的调试配置，并显著提升测试运行速度，解决了 **测试发现失败、运行缓慢、无法轻松调试** 等问题。
+**Fast Pytest Runner** 是一款专为 VS Code 设计的插件，旨在优化 `Python Test Explorer for Visual Studio Code` 的一些不足之处。该插件支持更快的测试扫描、更灵活的调试配置，并显著提升测试运行速度，解决了 **测试发现失败、运行缓慢、无法轻松调试** 等问题。
 
 ## 🎯 主要功能
 
@@ -18,7 +18,7 @@
 
 ## 📦 安装
 
-1. 在 VS Code **扩展商店** 搜索 `Pytest Runner` 并安装
+1. 在 VS Code **扩展商店** 搜索 [fast-pytest-runner](https://marketplace.visualstudio.com/items?itemName=jiyegui.fast-pytest-runner)  并安装
 
 2. 下载已打包好的vsix文件进行安装
 
