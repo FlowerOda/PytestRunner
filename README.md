@@ -36,8 +36,9 @@ code --install-extension /xxx/your.vsix(你本地的插件路径)
 
 ```json
 {
-    "pytestRunner.args": "-v --setup-show", // pytest命令行参数
-    "pytestRunner.alluredir": "report_v3",
+    "pytestRunner.pytestArgs": "-v --setup-show", // pytest命令行参数
+    "pytestRunner.allureDir": "report_v3",
+    "pytestRunner.pythonCmd": "sudo python3.7", // 读取运行时对于python的设定，例如python3.8，python3.7，python，sudo python3
 }
 ```
 
